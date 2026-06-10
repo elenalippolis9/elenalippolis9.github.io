@@ -4,402 +4,303 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>~/yourname</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet" />
   <style>
-    /*  Reset  */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-
-    /*  Tokens  */
     :root {
-      --bg:        #0d0d0d;
-      --bg-card:   #111111;
-      --bg-hover:  #161616;
-      --green:     #00ff41;
-      --green-dim: #00c032;
-      --body:      #d4d4d4;
-      --muted:     #666;
-      --border:    #222;
-      --font:      'JetBrains Mono', 'Courier New', monospace;
-      --ch:        80ch;
+      --bg:     #0d0d0d;
+      --green:  #00ff41;
+      --green2: #00c032;
+      --body:   #d4d4d4;
+      --muted:  #666;
+      --font:   'JetBrains Mono', 'Courier New', monospace;
     }
-
-    /*  Base  */
-    body {
-      background: var(--bg);
-      color: var(--body);
-      font-family: var(--font);
-      font-size: 14px;
-      line-height: 1.8;
-      padding: 0 1.5rem;
-    }
-
-    a { color: var(--green); text-decoration: none; }
-    a:hover { text-decoration: underline; text-underline-offset: 3px; }
-    a:focus-visible { outline: 1px solid var(--green); outline-offset: 3px; }
-
-    ::selection { background: var(--green); color: var(--bg); }
-
-    /*   Layout shell                */
-    .term {
-      max-width: var(--ch);
-      margin: 0 auto;
-      padding: 3rem 0 6rem;
-    }
-
-    /*   Cursor blink                */
-    @keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
-    .cursor {
-      display: inline-block;
-      width: 0.6ch;
-      height: 1.1em;
-      background: var(--green);
-      vertical-align: text-bottom;
-      animation: blink 1.1s step-end infinite;
-    }
-
-    /*   Prompt prefix              ─ */
-    .ps1 { color: var(--muted); user-select: none; }
-    .ps1 .host { color: var(--green-dim); }
+    html, body { height: 100%; background: var(--bg); color: var(--body); font-family: var(--font); font-size: 14px; line-height: 1.6; }
+    #terminal { max-width: 80ch; margin: 0 auto; padding: 2rem 1.5rem 6rem; min-height: 100vh; cursor: text; }
+    .out { white-space: pre-wrap; word-break: break-word; }
+    .out.dim   { color: var(--muted); }
+    .out.green { color: var(--green); }
+    .out.err   { color: #ff4455; }
+    .prompt-line { display: flex; align-items: center; gap: 0.5ch; margin-top: 0.1rem; }
+    .ps1 { color: var(--muted); user-select: none; white-space: nowrap; }
+    .ps1 .host { color: var(--green2); }
     .ps1 .path { color: var(--green); }
-
-    /*   Navigation               ─ */
-    nav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0 2rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 3rem;
-      font-size: 13px;
-    }
-    nav a { color: var(--muted); }
-    nav a:hover { color: var(--green); text-decoration: none; }
-    nav a::before { content: './'; color: var(--border); }
-
-    /*   Hero / boot sequence             */
-    .hero { margin-bottom: 4rem; }
-    .boot-line { color: var(--muted); font-size: 12px; line-height: 1.6; }
-    .boot-line.ok  { color: var(--green); }
-    .boot-line.err { color: #ff4455; }
-
-    .hero-name {
-      font-size: clamp(1.8rem, 5vw, 3rem);
-      font-weight: 700;
-      color: var(--green);
-      line-height: 1.1;
-      margin: 1.5rem 0 0.5rem;
-      letter-spacing: -0.02em;
-    }
-    .hero-title {
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 300;
-      font-style: italic;
-      margin-bottom: 1.2rem;
-    }
-    .hero-desc {
-      max-width: 60ch;
-      color: var(--body);
-      margin-bottom: 1.5rem;
-    }
-    .hero-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
-    .hero-links a {
-      color: var(--muted);
-      font-size: 13px;
-      transition: color 0.15s;
-    }
-    .hero-links a::before { content: '↗ '; }
-    .hero-links a:hover { color: var(--green); text-decoration: none; }
-
-    /*   Section headings             ─ */
-    section { margin-bottom: 4rem; }
-    .section-head {
-      display: flex;
-      align-items: baseline;
-      gap: 1ch;
-      margin-bottom: 1.5rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .section-head .cmd   { color: var(--green); font-weight: 700; }
-    .section-head .flags { color: var(--muted); font-size: 12px; font-weight: 300; }
-
-    /*   Cards (projects, writing, etc.)        ─ */
-    .card-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-    }
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      padding: 1rem 1.2rem;
-      transition: background 0.15s, border-color 0.15s;
-      text-decoration: none;
-      color: inherit;
-      display: block;
-    }
-    .card:hover {
-      background: var(--bg-hover);
-      border-color: var(--green);
-      text-decoration: none;
-    }
-    .card-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .card-title { color: var(--green); font-weight: 700; }
-    .card-meta  { color: var(--muted); font-size: 12px; white-space: nowrap; }
-    .card-desc  { color: var(--body); font-size: 13px; margin-top: 0.3rem; }
-    .card-tags  { margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
-    .tag {
-      font-size: 11px;
-      color: var(--muted);
-      border: 1px solid var(--border);
-      padding: 0 0.4rem;
-      line-height: 1.7;
-    }
-
-    /*   Skills / table               */
-    .skills-table { width: 100%; border-collapse: collapse; }
-    .skills-table tr { border-bottom: 1px solid var(--border); }
-    .skills-table tr:last-child { border-bottom: none; }
-    .skills-table td { padding: 0.5rem 0; vertical-align: top; }
-    .skills-table td:first-child {
-      color: var(--muted);
-      font-size: 12px;
-      width: 14ch;
-      padding-right: 1rem;
-    }
-    .skills-table td:last-child { color: var(--body); font-size: 13px; }
-
-    /*   Writing / log entries             */
-    .log-entry {
-      display: flex;
-      gap: 2ch;
-      align-items: baseline;
-      padding: 0.4rem 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .log-entry:last-child { border-bottom: none; }
-    .log-date { color: var(--muted); font-size: 12px; white-space: nowrap; flex-shrink: 0; }
-    .log-title a { color: var(--body); }
-    .log-title a:hover { color: var(--green); }
-
-    /*   Contact                ─ */
-    .contact-block {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      padding: 1.5rem 1.2rem;
-    }
-    .contact-block p { color: var(--body); margin-bottom: 1rem; }
-    .contact-list { list-style: none; }
-    .contact-list li { padding: 0.2rem 0; }
-    .contact-list li::before { content: '$ echo '; color: var(--muted); }
-
-    /*   Footer                  */
-    footer {
-      border-top: 1px solid var(--border);
-      padding-top: 1.5rem;
-      color: var(--muted);
-      font-size: 12px;
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    /*   Reduced motion               */
-    @media (prefers-reduced-motion: reduce) {
-      .cursor { animation: none; opacity: 1; }
-    }
-
-    /*   Mobile                  */
-    @media (max-width: 600px) {
-      body { font-size: 13px; }
-      .skills-table td:first-child { width: 10ch; }
-    }
+    #input-field { background: transparent; border: none; outline: none; color: var(--body); font-family: var(--font); font-size: 14px; line-height: 1.6; flex: 1; caret-color: var(--green); }
+    .dir-name { color: var(--green); }
+    a { color: var(--green); text-underline-offset: 3px; }
+    ::selection { background: var(--green); color: var(--bg); }
+    @media (prefers-reduced-motion: reduce) { .cursor { animation: none; opacity: 1; } }
   </style>
 </head>
 <body>
-<div class="term">
-
-  <!--   Navigation   -->
-  <nav>
-    <a href="#about">about</a>
-    <a href="#projects">projects</a>
-    <a href="#writing">writing</a>
-    <a href="#contact">contact</a>
-  </nav>
-
-  <!--   Hero / boot   -->
-  <header class="hero" id="about">
-    <div class="boot-line">Initializing session...</div>
-    <div class="boot-line ok">[  OK  ] Loaded user profile</div>
-    <div class="boot-line ok">[  OK  ] Mounted /home/yourname</div>
-    <div class="boot-line">Starting shell...<br><br></div>
-
-    <div>
-      <span class="ps1"><span class="host">yourname</span>:<span class="path">~</span> $</span>
-      <span style="color:var(--body)"> whoami</span>
-    </div>
-
-    <h1 class="hero-name">Your Name<span class="cursor"></span></h1>
-    <p class="hero-title">// software engineer &amp; open-source tinkerer</p>
-
-    <p class="hero-desc">
-      I build tools for developers, obsess over system design, and occasionally
-      write about things I've learned. Currently working on distributed systems
-      at <a href="#">SomeCompany</a>. Previously at <a href="#">OtherPlace</a>.
-    </p>
-
-    <div class="hero-links">
-      <a href="https://github.com/yourname" target="_blank" rel="noopener">github</a>
-      <a href="https://linkedin.com/in/yourname" target="_blank" rel="noopener">linkedin</a>
-      <a href="/resume.pdf" target="_blank">resume.pdf</a>
-    </div>
-  </header>
-
-  <!--   Projects   -->
-  <section id="projects">
-    <div class="section-head">
-      <span class="ps1"><span class="host">yourname</span>:<span class="path">~</span> $</span>
-      <span class="cmd">ls</span>
-      <span class="flags">-la ./projects</span>
-    </div>
-
-    <div class="card-grid">
-
-      <a class="card" href="https://github.com/yourname/project-one" target="_blank" rel="noopener">
-        <div class="card-row">
-          <span class="card-title">project-one</span>
-          <span class="card-meta">★ 312</span>
-        </div>
-        <p class="card-desc">A CLI tool that does something genuinely useful. Describe it in one punchy sentence here.</p>
-        <div class="card-tags">
-          <span class="tag">go</span>
-          <span class="tag">cli</span>
-          <span class="tag">open-source</span>
-        </div>
-      </a>
-
-      <a class="card" href="https://github.com/yourname/project-two" target="_blank" rel="noopener">
-        <div class="card-row">
-          <span class="card-title">project-two</span>
-          <span class="card-meta">★ 89</span>
-        </div>
-        <p class="card-desc">Another project worth mentioning. Keep the description short and functional — what does it do?</p>
-        <div class="card-tags">
-          <span class="tag">rust</span>
-          <span class="tag">wasm</span>
-        </div>
-      </a>
-
-      <a class="card" href="https://github.com/yourname/project-three" target="_blank" rel="noopener">
-        <div class="card-row">
-          <span class="card-title">project-three</span>
-          <span class="card-meta">★ 44</span>
-        </div>
-        <p class="card-desc">Smaller experiment or library. Still worth shipping.</p>
-        <div class="card-tags">
-          <span class="tag">typescript</span>
-          <span class="tag">node</span>
-        </div>
-      </a>
-
-    </div>
-  </section>
-
-  <!--   Skills   -->
-  <section id="skills">
-    <div class="section-head">
-      <span class="ps1"><span class="host">yourname</span>:<span class="path">~</span> $</span>
-      <span class="cmd">cat</span>
-      <span class="flags">skills.txt</span>
-    </div>
-
-    <table class="skills-table">
-      <tbody>
-        <tr>
-          <td>languages</td>
-          <td>Go, Rust, TypeScript, Python, SQL</td>
-        </tr>
-        <tr>
-          <td>infra</td>
-          <td>Kubernetes, Terraform, AWS, Postgres, Redis</td>
-        </tr>
-        <tr>
-          <td>interests</td>
-          <td>distributed systems, compilers, developer tooling, unix philosophy</td>
-        </tr>
-        <tr>
-          <td>currently</td>
-          <td>learning eBPF, reading DDIA for the third time</td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
-
-  <!--   Writing   -->
-  <section id="writing">
-    <div class="section-head">
-      <span class="ps1"><span class="host">yourname</span>:<span class="path">~</span> $</span>
-      <span class="cmd">ls</span>
-      <span class="flags">-t ./writing</span>
-    </div>
-
-    <div>
-      <div class="log-entry">
-        <span class="log-date">2025-11-03</span>
-        <span class="log-title"><a href="#">Why I rewrote my side project in Rust</a></span>
-      </div>
-      <div class="log-entry">
-        <span class="log-date">2025-09-17</span>
-        <span class="log-title"><a href="#">Notes on designing CLIs that don't suck</a></span>
-      </div>
-      <div class="log-entry">
-        <span class="log-date">2025-07-02</span>
-        <span class="log-title"><a href="#">The case for boring technology</a></span>
-      </div>
-      <div class="log-entry">
-        <span class="log-date">2025-04-12</span>
-        <span class="log-title"><a href="#">What Postgres taught me about system design</a></span>
-      </div>
-    </div>
-  </section>
-
-  <!--   Contact   -->
-  <section id="contact">
-    <div class="section-head">
-      <span class="ps1"><span class="host">yourname</span>:<span class="path">~</span> $</span>
-      <span class="cmd">cat</span>
-      <span class="flags">contact.md</span>
-    </div>
-
-    <div class="contact-block">
-      <p>Available for consulting, open-source collaboration, and interesting conversations.
-      Best reached by email; I try to reply within a few days.</p>
-
-      <ul class="contact-list">
-        <li><a href="mailto:you@example.com">you@example.com</a></li>
-        <li><a href="https://github.com/yourname" target="_blank" rel="noopener">github.com/yourname</a></li>
-        <li><a href="https://twitter.com/yourname" target="_blank" rel="noopener">@yourname</a></li>
-      </ul>
-    </div>
-  </section>
-
-  <!--   Footer   -->
-  <footer>
-    <span>© 2025 yourname — <a href="https://github.com/yourname/yourname.github.io">source on github</a></span>
-    <span style="color:var(--border)">exit 0</span>
-  </footer>
-
+<div id="terminal" onclick="focusInput()">
+  <div id="output"></div>
+  <div class="prompt-line" id="prompt-row">
+    <span class="ps1"><span class="host">yourname</span>:<span class="path" id="ps1-path">~</span> $</span>
+    <input id="input-field" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus />
+  </div>
 </div>
+<script>
+const output  = document.getElementById('output');
+const input   = document.getElementById('input-field');
+const ps1path = document.getElementById('ps1-path');
+
+let cwd     = '~';
+let hist    = [];
+let histIdx = -1;
+
+const FS = {
+  '~':                  { type:'dir', children:['about','projects','writing','contact'] },
+  '~/about':            { type:'dir', children:['bio.txt','stack.txt','now.txt'] },
+  '~/projects':         { type:'dir', children:['project-one','project-two','project-three'] },
+  '~/projects/project-one':   { type:'dir', children:['readme.md','link.txt'] },
+  '~/projects/project-two':   { type:'dir', children:['readme.md','link.txt'] },
+  '~/projects/project-three': { type:'dir', children:['readme.md'] },
+  '~/writing':          { type:'dir', children:['2025-11-03_rust-rewrite.md','2025-09-17_cli-design.md','2025-07-02_boring-tech.md','2025-04-12_postgres-lessons.md'] },
+  '~/contact':          { type:'dir', children:['email.txt','links.txt'] },
+
+  '~/about/bio.txt': { type:'file', content:`I build tools for developers, obsess over system design, and
+occasionally write about things I've learned.
+
+Currently working on distributed systems at SomeCompany.
+Previously at OtherPlace.
+
+Based in Berlin. Originally from Somewhere.` },
+
+  '~/about/stack.txt': { type:'file', content:`languages  Go, Rust, TypeScript, Python, SQL
+infra      Kubernetes, Terraform, AWS, Postgres, Redis
+interests  distributed systems, compilers, unix philosophy
+currently  learning eBPF, reading DDIA for the third time` },
+
+  '~/about/now.txt': { type:'file', content:`Updated: 2025-11-01
+
+- Building an open-source observability tool
+- Reading "Designing Data-Intensive Applications" (again)
+- Trying to run 3x per week with mixed success` },
+
+  '~/projects/project-one/readme.md': { type:'file', content:`project-one  ★ 312
+
+A CLI tool that does something genuinely useful.
+Describe it in one punchy sentence here.
+
+tags: go, cli, open-source` },
+  '~/projects/project-one/link.txt': { type:'file', content:`https://github.com/yourname/project-one`, link:'https://github.com/yourname/project-one' },
+
+  '~/projects/project-two/readme.md': { type:'file', content:`project-two  ★ 89
+
+Another project worth mentioning. What does it do?
+
+tags: rust, wasm` },
+  '~/projects/project-two/link.txt': { type:'file', content:`https://github.com/yourname/project-two`, link:'https://github.com/yourname/project-two' },
+
+  '~/projects/project-three/readme.md': { type:'file', content:`project-three  ★ 44
+
+Smaller experiment or library. Still worth shipping.
+
+tags: typescript, node` },
+
+  '~/writing/2025-11-03_rust-rewrite.md': { type:'file', content:`Why I rewrote my side project in Rust
+Published: 2025-11-03
+
+Six months ago I rewrote a Go service in Rust.
+Here is what I actually learned beyond the obvious perf numbers.
+
+https://yourname.github.io/writing/rust-rewrite`, link:'https://yourname.github.io/writing/rust-rewrite' },
+
+  '~/writing/2025-09-17_cli-design.md': { type:'file', content:`Notes on designing CLIs that don't suck
+Published: 2025-09-17
+
+Good CLIs feel like they were designed by someone who
+actually uses the terminal. Most aren't.
+
+https://yourname.github.io/writing/cli-design`, link:'https://yourname.github.io/writing/cli-design' },
+
+  '~/writing/2025-07-02_boring-tech.md': { type:'file', content:`The case for boring technology
+Published: 2025-07-02
+
+Postgres. Redis. nginx. The boring choices that let you
+focus on the actual problem.` },
+
+  '~/writing/2025-04-12_postgres-lessons.md': { type:'file', content:`What Postgres taught me about system design
+Published: 2025-04-12
+
+Five years of using Postgres as my default database, and
+what I've learned about thinking in sets and constraints.` },
+
+  '~/contact/email.txt': { type:'file', content:`you@example.com`, link:'mailto:you@example.com' },
+  '~/contact/links.txt': { type:'file', content:`github   https://github.com/yourname
+linkedin https://linkedin.com/in/yourname
+twitter  https://twitter.com/yourname` },
+};
+
+function resolve(target) {
+  if (!target || target === '~') return '~';
+  if (target === '..') {
+    if (cwd === '~') return '~';
+    const parts = cwd.split('/');
+    parts.pop();
+    return parts.join('/') || '~';
+  }
+  if (target.startsWith('~/')) return target;
+  return cwd === '~' ? '~/' + target : cwd + '/' + target;
+}
+
+function println(text, cls) {
+  const d = document.createElement('div');
+  d.className = 'out' + (cls ? ' ' + cls : '');
+  d.textContent = text === '' ? '\u00a0' : text;
+  output.appendChild(d);
+}
+
+function echoCmd(cmd) {
+  const d = document.createElement('div');
+  d.className = 'prompt-line';
+  const ps = document.createElement('span');
+  ps.className = 'ps1';
+  ps.innerHTML = `<span class="host">yourname</span>:<span class="path">${esc(cwd)}</span> $`;
+  const sp = document.createElement('span');
+  sp.className = 'out';
+  sp.textContent = ' ' + cmd;
+  d.appendChild(ps);
+  d.appendChild(sp);
+  output.appendChild(d);
+}
+
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+const CMDS = {
+  help() {
+    println('');
+    println('commands', 'green');
+    println('');
+    println('  ls [dir]      list directory contents');
+    println('  cd <dir>      change directory  (cd .. to go up)');
+    println('  cat <file>    print file contents');
+    println('  open <file>   open a link in the browser');
+    println('  pwd           print current path');
+    println('  clear         clear the terminal');
+    println('  whoami        about this site');
+    println('');
+    println('  tab           autocomplete    ↑ ↓   command history', 'dim');
+    println('');
+  },
+
+  ls(args) {
+    const path = args[0] ? resolve(args[0]) : cwd;
+    const node = FS[path];
+    if (!node) { println(`ls: ${args[0]}: no such file or directory`, 'err'); return; }
+    if (node.type === 'file') { println(path.split('/').pop()); return; }
+    println('');
+    node.children.forEach(name => {
+      const childPath = path === '~' ? '~/' + name : path + '/' + name;
+      const child = FS[childPath];
+      const isDir = child && child.type === 'dir';
+      const d = document.createElement('div');
+      d.className = 'out' + (isDir ? ' dir-name' : '');
+      d.textContent = isDir ? name + '/' : name;
+      output.appendChild(d);
+    });
+    println('');
+  },
+
+  cd(args) {
+    const target = args[0];
+    if (!target || target === '~') { cwd = '~'; ps1path.textContent = '~'; return; }
+    const path = resolve(target);
+    const node = FS[path];
+    if (!node) { println(`cd: ${target}: no such file or directory`, 'err'); return; }
+    if (node.type === 'file') { println(`cd: ${target}: not a directory`, 'err'); return; }
+    cwd = path;
+    ps1path.textContent = cwd;
+  },
+
+  cat(args) {
+    if (!args[0]) { println('usage: cat <file>', 'dim'); return; }
+    const path = resolve(args[0]);
+    const node = FS[path];
+    if (!node) { println(`cat: ${args[0]}: no such file or directory`, 'err'); return; }
+    if (node.type === 'dir') { println(`cat: ${args[0]}: is a directory — try ls`, 'err'); return; }
+    println('');
+    node.content.split('\n').forEach(line => println(line));
+    println('');
+  },
+
+  open(args) {
+    if (!args[0]) { println('usage: open <file>', 'dim'); return; }
+    const path = resolve(args[0]);
+    const node = FS[path];
+    if (!node) { println(`open: ${args[0]}: no such file or directory`, 'err'); return; }
+    if (!node.link) { println(`open: no link in this file — try cat instead`, 'dim'); return; }
+    println(`opening ${node.link}`, 'dim');
+    window.open(node.link, '_blank', 'noopener');
+  },
+
+  pwd() { println(cwd); },
+
+  whoami() {
+    println('');
+    println('yourname — software engineer & open-source tinkerer', 'green');
+    println('');
+    println('this is a terminal. navigate it like a filesystem.');
+    println('');
+    println('  ls              see what is here');
+    println('  cd about        learn about me');
+    println('  cd projects     things i have built');
+    println('  cd writing      things i have written');
+    println('  cd contact      get in touch');
+    println('');
+  },
+
+  clear() { output.innerHTML = ''; },
+};
+
+function autocomplete(val) {
+  const parts = val.split(' ');
+  if (parts.length === 1) {
+    const m = Object.keys(CMDS).filter(c => c.startsWith(parts[0]));
+    return m.length === 1 ? m[0] + ' ' : null;
+  }
+  const arg  = parts[parts.length - 1];
+  const node = FS[cwd];
+  if (!node || node.type !== 'dir') return null;
+  const m = node.children.filter(c => c.startsWith(arg));
+  if (m.length === 1) { parts[parts.length - 1] = m[0]; return parts.join(' '); }
+  if (m.length > 1) { println(''); println(m.join('   '), 'dim'); }
+  return null;
+}
+
+function run(line) {
+  const trimmed = line.trim();
+  echoCmd(trimmed);
+  if (!trimmed) { scroll(); return; }
+  hist.unshift(trimmed); histIdx = -1;
+  const [cmd, ...args] = trimmed.split(/\s+/);
+  if (CMDS[cmd]) CMDS[cmd](args);
+  else println(`${cmd}: command not found  (try 'help')`, 'err');
+  scroll();
+}
+
+function scroll() { window.scrollTo(0, document.body.scrollHeight); }
+function focusInput() { input.focus(); }
+
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { const v = input.value; input.value = ''; run(v); }
+  else if (e.key === 'ArrowUp')   { e.preventDefault(); if (histIdx < hist.length-1){ histIdx++; input.value = hist[histIdx]; } }
+  else if (e.key === 'ArrowDown') { e.preventDefault(); if (histIdx > 0){ histIdx--; input.value = hist[histIdx]; } else { histIdx=-1; input.value=''; } }
+  else if (e.key === 'Tab')       { e.preventDefault(); const c = autocomplete(input.value); if (c) input.value = c; }
+  else if (e.key === 'l' && e.ctrlKey) { e.preventDefault(); CMDS.clear(); }
+});
+
+// boot
+println('');
+println('yourname.github.io', 'green');
+println('──────────────────────────────────────────', 'dim');
+println('');
+println("type 'help' for commands, or just start with 'ls'");
+println('');
+input.focus();
+</script>
 </body>
 </html>
