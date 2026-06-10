@@ -158,9 +158,34 @@ const CMDS = {
       addLine(`cat: ${args[0]}: is a directory  (use ls to list it)`, 'err');
       return;
     }
-    addBlank();
-    node.content.split('\n').forEach(line => addLine(line));
-    addBlank();
+
+    const print = text => {
+      addBlank();
+      text.split('\n').forEach(line => addLine(line));
+      addBlank();
+      scrollToBottom();
+    };
+
+    if (node.content != null) {
+      print(node.content);
+      return;
+    }
+
+    if (node.path) {
+      fetch(node.path).then(res => {
+        if (!res.ok) throw new Error('failed to fetch');
+        return res.text();
+      }).then(text => {
+        node.content = text;
+        print(text);
+      }).catch(() => {
+        addLine(`cat: ${args[0]}: could not read file`, 'err');
+        scrollToBottom();
+      });
+      return;
+    }
+
+    addLine(`cat: ${args[0]}: no content`, 'err');
   },
 
   open(args) {
