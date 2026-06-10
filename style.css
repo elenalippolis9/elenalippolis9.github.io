@@ -8,11 +8,11 @@
 /* ── Tokens ─────────────────────────────────────────────────── */
 :root {
   --bg:      #0d0d0d;
-  --green:   #00ff41;
-  --green2:  #00c032;
+  --green:   #ff00ae;
+  --green2:  #c20085;
   --body:    #d4d4d4;
   --muted:   #555;
-  --error:   #ff4455;
+  --error:   #fcff44;
   --font:    'JetBrains Mono', 'Courier New', monospace;
   --font-sz: 14px;
   --line-h:  1.65;
