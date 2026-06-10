@@ -1,0 +1,47 @@
+================================================================================
+      ___ _                   _     _                  _ _     
+     | __| |___ _ _  __ _    | |   (_)_ __ _ __ ___ | (_)___ 
+     | _|| / -_) ' \/ _` |   | |___| | '_ \ '_ \/ _ \| | (_-<
+     |___|_\___|_||_\__,_|   |____|_| .__/ .__/\___/|_|_/__/
+                                    |_|  |_|                
+================================================================================
+
+Hello! I'm Elena, a Computer Scientist turned Bioinformatician with a 
+passion for extracting meaningful stories from complex biological data.
+
+[ WHO I AM ] ...................................................................
+I blend the worlds of software engineering, deep learning, and computational 
+genomics. My journey started with a Bachelor's in Computer Science from the 
+University of Bologna and led me to a Master's in Bioinformatics for 
+Computational Genomics (Polimi & UniMi). I'm currently part of the Glastonbury 
+Group at the Human Technopole in Milan, where I develop machine learning 
+frameworks to analyze human tissue and decode cellular behaviors.
+
+[ WHAT I DO ] ..................................................................
+> Machine Learning & Computer Vision: Building and fine-tuning custom deep 
+  learning models (like U-Nets, StarDist, Cellpose) to analyze histology, 
+  immunofluorescence, and time-lapse microscopy images.
+> Transcriptomics & Genomics: Working with both bulk and single-cell data, 
+  benchmarking pipelines to map gene expression directly onto tissue 
+  architecture.
+> Web Development: Bringing ideas to the web. I've built platforms for academic 
+  conferences (Semantics 2026), UNIBO Motorsport, and entrepreneurial projects.
+
+[ BEYOND THE CODE ] ............................................................
+When I'm not training models, debugging pipelines, or digging into the latest 
+foundation models, you might find me flying drones (I'm a certified UAS remote 
+pilot in the OPEN category!) or exploring the intersection of technology and 
+biology. I love tackling projects that have a tangible impact, whether in a 
+cutting-edge biomedical research lab or collaborating with a team.
+
+[ TECH STACK ] .................................................................
+* Languages:  Python, C++, C, Java, R, SQL, JavaScript, Haskell, HTML, LaTeX
+* Libraries:  PyTorch, TensorFlow, OpenCV, Scanpy, Squidpy, scikit-learn
+* Core Focus: Deep Learning, Single-cell/Bulk Analysis, Computer Vision
+
+[ LET'S CONNECT ] ..............................................................
+* GitHub:   https://github.com/elenalippolis9
+* LinkedIn: https://www.linkedin.com/in/elena-lippolis/
+* Email:    elenalippolis19@gmail.com
+
+================================================================================
