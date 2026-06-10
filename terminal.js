@@ -57,7 +57,7 @@ function addEcho(cmdText) {
   const ps = document.createElement('span');
   ps.className = 'ps1-echo ps1';
   ps.innerHTML =
-    `<span class="host">elenalippolis</span>` +
+    `<span class="host">elenalippolis9</span>` +
     `<span class="sep">:</span>` +
     `<span class="path">${esc(cwd)}</span>` +
     `<span class="sigil"> $</span>`;
