@@ -315,7 +315,7 @@ inputEl.addEventListener('focus', () => {
 /* ── Boot sequence ────────────────────────────────────────── */
 (function boot() {
   addLine('');
-  addLine('yourname.github.io', 'green');
+  addLine('elenalippolis9.github.io', 'green');
   addLine('─'.repeat(40), 'dim');
   addLine('');
   addLine("type 'help' for commands, or just try 'ls'");
