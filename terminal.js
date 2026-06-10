@@ -185,7 +185,7 @@ const CMDS = {
 
   whoami() {
     addBlank();
-    addLine('elenalippolis — computer scientist and bioinformatician', 'green');
+    addLine('elenalippolis9 — software engineer & open-source tinkerer', 'green');
     addBlank();
     addLine('this is an interactive terminal. navigate like a filesystem:');
     addBlank();
