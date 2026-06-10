@@ -2,305 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
   <title>~/yourname</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg:     #0d0d0d;
-      --green:  #00ff41;
-      --green2: #00c032;
-      --body:   #d4d4d4;
-      --muted:  #666;
-      --font:   'JetBrains Mono', 'Courier New', monospace;
-    }
-    html, body { height: 100%; background: var(--bg); color: var(--body); font-family: var(--font); font-size: 14px; line-height: 1.6; }
-    #terminal { max-width: 80ch; margin: 0 auto; padding: 2rem 1.5rem 6rem; min-height: 100vh; cursor: text; }
-    .out { white-space: pre-wrap; word-break: break-word; }
-    .out.dim   { color: var(--muted); }
-    .out.green { color: var(--green); }
-    .out.err   { color: #ff4455; }
-    .prompt-line { display: flex; align-items: center; gap: 0.5ch; margin-top: 0.1rem; }
-    .ps1 { color: var(--muted); user-select: none; white-space: nowrap; }
-    .ps1 .host { color: var(--green2); }
-    .ps1 .path { color: var(--green); }
-    #input-field { background: transparent; border: none; outline: none; color: var(--body); font-family: var(--font); font-size: 14px; line-height: 1.6; flex: 1; caret-color: var(--green); }
-    .dir-name { color: var(--green); }
-    a { color: var(--green); text-underline-offset: 3px; }
-    ::selection { background: var(--green); color: var(--bg); }
-    @media (prefers-reduced-motion: reduce) { .cursor { animation: none; opacity: 1; } }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<div id="terminal" onclick="focusInput()">
-  <div id="output"></div>
-  <div class="prompt-line" id="prompt-row">
-    <span class="ps1"><span class="host">yourname</span>:<span class="path" id="ps1-path">~</span> $</span>
-    <input id="input-field" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus />
+
+  <div id="terminal">
+    <div id="output"></div>
+    <div id="input-row">
+      <span class="ps1">
+        <span class="host">yourname</span><span class="sep">:</span><span class="path" id="ps1-path">~</span>
+        <span class="sigil"> $</span>
+      </span>
+      <input
+        id="input-field"
+        type="text"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        autofocus
+      />
+    </div>
   </div>
-</div>
-<script>
-const output  = document.getElementById('output');
-const input   = document.getElementById('input-field');
-const ps1path = document.getElementById('ps1-path');
 
-let cwd     = '~';
-let hist    = [];
-let histIdx = -1;
+  <script src="fs.js"></script>
+  <script src="terminal.js"></script>
 
-const FS = {
-  '~':                  { type:'dir', children:['about','projects','writing','contact'] },
-  '~/about':            { type:'dir', children:['bio.txt','stack.txt','now.txt'] },
-  '~/projects':         { type:'dir', children:['project-one','project-two','project-three'] },
-  '~/projects/project-one':   { type:'dir', children:['readme.md','link.txt'] },
-  '~/projects/project-two':   { type:'dir', children:['readme.md','link.txt'] },
-  '~/projects/project-three': { type:'dir', children:['readme.md'] },
-  '~/writing':          { type:'dir', children:['2025-11-03_rust-rewrite.md','2025-09-17_cli-design.md','2025-07-02_boring-tech.md','2025-04-12_postgres-lessons.md'] },
-  '~/contact':          { type:'dir', children:['email.txt','links.txt'] },
-
-  '~/about/bio.txt': { type:'file', content:`I build tools for developers, obsess over system design, and
-occasionally write about things I've learned.
-
-Currently working on distributed systems at SomeCompany.
-Previously at OtherPlace.
-
-Based in Berlin. Originally from Somewhere.` },
-
-  '~/about/stack.txt': { type:'file', content:`languages  Go, Rust, TypeScript, Python, SQL
-infra      Kubernetes, Terraform, AWS, Postgres, Redis
-interests  distributed systems, compilers, unix philosophy
-currently  learning eBPF, reading DDIA for the third time` },
-
-  '~/about/now.txt': { type:'file', content:`Updated: 2025-11-01
-
-- Building an open-source observability tool
-- Reading "Designing Data-Intensive Applications" (again)
-- Trying to run 3x per week with mixed success` },
-
-  '~/projects/project-one/readme.md': { type:'file', content:`project-one  ★ 312
-
-A CLI tool that does something genuinely useful.
-Describe it in one punchy sentence here.
-
-tags: go, cli, open-source` },
-  '~/projects/project-one/link.txt': { type:'file', content:`https://github.com/yourname/project-one`, link:'https://github.com/yourname/project-one' },
-
-  '~/projects/project-two/readme.md': { type:'file', content:`project-two  ★ 89
-
-Another project worth mentioning. What does it do?
-
-tags: rust, wasm` },
-  '~/projects/project-two/link.txt': { type:'file', content:`https://github.com/yourname/project-two`, link:'https://github.com/yourname/project-two' },
-
-  '~/projects/project-three/readme.md': { type:'file', content:`project-three  ★ 44
-
-Smaller experiment or library. Still worth shipping.
-
-tags: typescript, node` },
-
-  '~/writing/2025-11-03_rust-rewrite.md': { type:'file', content:`Why I rewrote my side project in Rust
-Published: 2025-11-03
-
-Six months ago I rewrote a Go service in Rust.
-Here is what I actually learned beyond the obvious perf numbers.
-
-https://yourname.github.io/writing/rust-rewrite`, link:'https://yourname.github.io/writing/rust-rewrite' },
-
-  '~/writing/2025-09-17_cli-design.md': { type:'file', content:`Notes on designing CLIs that don't suck
-Published: 2025-09-17
-
-Good CLIs feel like they were designed by someone who
-actually uses the terminal. Most aren't.
-
-https://yourname.github.io/writing/cli-design`, link:'https://yourname.github.io/writing/cli-design' },
-
-  '~/writing/2025-07-02_boring-tech.md': { type:'file', content:`The case for boring technology
-Published: 2025-07-02
-
-Postgres. Redis. nginx. The boring choices that let you
-focus on the actual problem.` },
-
-  '~/writing/2025-04-12_postgres-lessons.md': { type:'file', content:`What Postgres taught me about system design
-Published: 2025-04-12
-
-Five years of using Postgres as my default database, and
-what I've learned about thinking in sets and constraints.` },
-
-  '~/contact/email.txt': { type:'file', content:`you@example.com`, link:'mailto:you@example.com' },
-  '~/contact/links.txt': { type:'file', content:`github   https://github.com/yourname
-linkedin https://linkedin.com/in/yourname
-twitter  https://twitter.com/yourname` },
-};
-
-function resolve(target) {
-  if (!target || target === '~') return '~';
-  if (target === '..') {
-    if (cwd === '~') return '~';
-    const parts = cwd.split('/');
-    parts.pop();
-    return parts.join('/') || '~';
-  }
-  if (target.startsWith('~/')) return target;
-  return cwd === '~' ? '~/' + target : cwd + '/' + target;
-}
-
-function println(text, cls) {
-  const d = document.createElement('div');
-  d.className = 'out' + (cls ? ' ' + cls : '');
-  d.textContent = text === '' ? '\u00a0' : text;
-  output.appendChild(d);
-}
-
-function echoCmd(cmd) {
-  const d = document.createElement('div');
-  d.className = 'prompt-line';
-  const ps = document.createElement('span');
-  ps.className = 'ps1';
-  ps.innerHTML = `<span class="host">yourname</span>:<span class="path">${esc(cwd)}</span> $`;
-  const sp = document.createElement('span');
-  sp.className = 'out';
-  sp.textContent = ' ' + cmd;
-  d.appendChild(ps);
-  d.appendChild(sp);
-  output.appendChild(d);
-}
-
-function esc(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-const CMDS = {
-  help() {
-    println('');
-    println('commands', 'green');
-    println('');
-    println('  ls [dir]      list directory contents');
-    println('  cd <dir>      change directory  (cd .. to go up)');
-    println('  cat <file>    print file contents');
-    println('  open <file>   open a link in the browser');
-    println('  pwd           print current path');
-    println('  clear         clear the terminal');
-    println('  whoami        about this site');
-    println('');
-    println('  tab           autocomplete    ↑ ↓   command history', 'dim');
-    println('');
-  },
-
-  ls(args) {
-    const path = args[0] ? resolve(args[0]) : cwd;
-    const node = FS[path];
-    if (!node) { println(`ls: ${args[0]}: no such file or directory`, 'err'); return; }
-    if (node.type === 'file') { println(path.split('/').pop()); return; }
-    println('');
-    node.children.forEach(name => {
-      const childPath = path === '~' ? '~/' + name : path + '/' + name;
-      const child = FS[childPath];
-      const isDir = child && child.type === 'dir';
-      const d = document.createElement('div');
-      d.className = 'out' + (isDir ? ' dir-name' : '');
-      d.textContent = isDir ? name + '/' : name;
-      output.appendChild(d);
-    });
-    println('');
-  },
-
-  cd(args) {
-    const target = args[0];
-    if (!target || target === '~') { cwd = '~'; ps1path.textContent = '~'; return; }
-    const path = resolve(target);
-    const node = FS[path];
-    if (!node) { println(`cd: ${target}: no such file or directory`, 'err'); return; }
-    if (node.type === 'file') { println(`cd: ${target}: not a directory`, 'err'); return; }
-    cwd = path;
-    ps1path.textContent = cwd;
-  },
-
-  cat(args) {
-    if (!args[0]) { println('usage: cat <file>', 'dim'); return; }
-    const path = resolve(args[0]);
-    const node = FS[path];
-    if (!node) { println(`cat: ${args[0]}: no such file or directory`, 'err'); return; }
-    if (node.type === 'dir') { println(`cat: ${args[0]}: is a directory — try ls`, 'err'); return; }
-    println('');
-    node.content.split('\n').forEach(line => println(line));
-    println('');
-  },
-
-  open(args) {
-    if (!args[0]) { println('usage: open <file>', 'dim'); return; }
-    const path = resolve(args[0]);
-    const node = FS[path];
-    if (!node) { println(`open: ${args[0]}: no such file or directory`, 'err'); return; }
-    if (!node.link) { println(`open: no link in this file — try cat instead`, 'dim'); return; }
-    println(`opening ${node.link}`, 'dim');
-    window.open(node.link, '_blank', 'noopener');
-  },
-
-  pwd() { println(cwd); },
-
-  whoami() {
-    println('');
-    println('yourname — software engineer & open-source tinkerer', 'green');
-    println('');
-    println('this is a terminal. navigate it like a filesystem.');
-    println('');
-    println('  ls              see what is here');
-    println('  cd about        learn about me');
-    println('  cd projects     things i have built');
-    println('  cd writing      things i have written');
-    println('  cd contact      get in touch');
-    println('');
-  },
-
-  clear() { output.innerHTML = ''; },
-};
-
-function autocomplete(val) {
-  const parts = val.split(' ');
-  if (parts.length === 1) {
-    const m = Object.keys(CMDS).filter(c => c.startsWith(parts[0]));
-    return m.length === 1 ? m[0] + ' ' : null;
-  }
-  const arg  = parts[parts.length - 1];
-  const node = FS[cwd];
-  if (!node || node.type !== 'dir') return null;
-  const m = node.children.filter(c => c.startsWith(arg));
-  if (m.length === 1) { parts[parts.length - 1] = m[0]; return parts.join(' '); }
-  if (m.length > 1) { println(''); println(m.join('   '), 'dim'); }
-  return null;
-}
-
-function run(line) {
-  const trimmed = line.trim();
-  echoCmd(trimmed);
-  if (!trimmed) { scroll(); return; }
-  hist.unshift(trimmed); histIdx = -1;
-  const [cmd, ...args] = trimmed.split(/\s+/);
-  if (CMDS[cmd]) CMDS[cmd](args);
-  else println(`${cmd}: command not found  (try 'help')`, 'err');
-  scroll();
-}
-
-function scroll() { window.scrollTo(0, document.body.scrollHeight); }
-function focusInput() { input.focus(); }
-
-input.addEventListener('keydown', e => {
-  if (e.key === 'Enter') { const v = input.value; input.value = ''; run(v); }
-  else if (e.key === 'ArrowUp')   { e.preventDefault(); if (histIdx < hist.length-1){ histIdx++; input.value = hist[histIdx]; } }
-  else if (e.key === 'ArrowDown') { e.preventDefault(); if (histIdx > 0){ histIdx--; input.value = hist[histIdx]; } else { histIdx=-1; input.value=''; } }
-  else if (e.key === 'Tab')       { e.preventDefault(); const c = autocomplete(input.value); if (c) input.value = c; }
-  else if (e.key === 'l' && e.ctrlKey) { e.preventDefault(); CMDS.clear(); }
-});
-
-// boot
-println('');
-println('yourname.github.io', 'green');
-println('──────────────────────────────────────────', 'dim');
-println('');
-println("type 'help' for commands, or just start with 'ls'");
-println('');
-input.focus();
-</script>
 </body>
 </html>
