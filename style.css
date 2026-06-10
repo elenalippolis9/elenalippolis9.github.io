@@ -1,0 +1,137 @@
+/* ── Reset ─────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Tokens ─────────────────────────────────────────────────── */
+:root {
+  --bg:      #0d0d0d;
+  --green:   #00ff41;
+  --green2:  #00c032;
+  --body:    #d4d4d4;
+  --muted:   #555;
+  --error:   #ff4455;
+  --font:    'JetBrains Mono', 'Courier New', monospace;
+  --font-sz: 14px;
+  --line-h:  1.65;
+  --pad-x:   1.4rem;
+  --input-h: 2.6rem;
+}
+
+/* ── Viewport fill ──────────────────────────────────────────── */
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;          /* outer scroll disabled */
+  background: var(--bg);
+  color: var(--body);
+  font-family: var(--font);
+  font-size: var(--font-sz);
+  line-height: var(--line-h);
+}
+
+/* ── Terminal container ─────────────────────────────────────── */
+#terminal {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  max-width: 90ch;
+  margin: 0 auto;
+}
+
+/* ── Scrollable output ──────────────────────────────────────── */
+#output {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1.2rem var(--pad-x) 0.4rem;
+  scroll-behavior: smooth;
+
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #2a2a2a transparent;
+}
+
+/* Webkit scrollbar */
+#output::-webkit-scrollbar        { width: 5px; }
+#output::-webkit-scrollbar-track  { background: transparent; }
+#output::-webkit-scrollbar-thumb  { background: #2a2a2a; border-radius: 3px; }
+
+/* ── Fixed input bar ────────────────────────────────────────── */
+#input-row {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5ch;
+  padding: 0.45rem var(--pad-x);
+  border-top: 1px solid #1a1a1a;
+  background: var(--bg);
+}
+
+/* ── Prompt ─────────────────────────────────────────────────── */
+.ps1 {
+  white-space: nowrap;
+  user-select: none;
+  flex-shrink: 0;
+}
+.ps1 .host { color: var(--green2); }
+.ps1 .sep  { color: var(--muted); }
+.ps1 .path { color: var(--green); }
+.ps1 .sigil{ color: var(--muted); }
+
+/* ── Input ──────────────────────────────────────────────────── */
+#input-field {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--body);
+  font-family: var(--font);
+  font-size: var(--font-sz);
+  line-height: var(--line-h);
+  caret-color: var(--green);
+  min-width: 0;
+}
+
+/* ── Output line types ──────────────────────────────────────── */
+.line {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.line.dim    { color: var(--muted); }
+.line.green  { color: var(--green); }
+.line.err    { color: var(--error); }
+.line.dir    { color: var(--green); }
+
+/* ── Echoed prompt lines ────────────────────────────────────── */
+.echo-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5ch;
+  flex-wrap: wrap;
+}
+.echo-row .ps1-echo {
+  white-space: nowrap;
+  user-select: none;
+  flex-shrink: 0;
+}
+.echo-row .cmd-text { color: var(--body); }
+
+/* ── Links ──────────────────────────────────────────────────── */
+a { color: var(--green); text-underline-offset: 3px; }
+
+/* ── Selection ──────────────────────────────────────────────── */
+::selection { background: var(--green); color: var(--bg); }
+
+/* ── Mobile: slightly smaller font ─────────────────────────── */
+@media (max-width: 480px) {
+  :root { --font-sz: 12px; --pad-x: 0.9rem; }
+}
+
+/* ── Reduced motion ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  #output { scroll-behavior: auto; }
+}
