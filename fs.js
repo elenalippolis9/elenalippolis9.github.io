@@ -67,8 +67,8 @@ tags: go, cli, open-source`,
   },
   '~/projects/project-one/link.txt': {
     type: 'file',
-    content: `https://github.com/yourname/project-one`,
-    link: 'https://github.com/yourname/project-one',
+    content: `https://github.com/elenalippolis9/project-one`,
+    link: 'https://github.com/elenalippolis9/project-one',
   },
 
   '~/projects/project-two': {
@@ -86,8 +86,8 @@ tags: rust, wasm`,
   },
   '~/projects/project-two/link.txt': {
     type: 'file',
-    content: `https://github.com/yourname/project-two`,
-    link: 'https://github.com/yourname/project-two',
+    content: `https://github.com/elenalippolis9/project-two`,
+    link: 'https://github.com/elenalippolis9/project-two',
   },
 
   '~/projects/project-three': {
@@ -123,8 +123,8 @@ Published: 2025-11-03
 Six months ago I rewrote a Go service in Rust. Here is
 what I actually learned beyond the obvious perf numbers.
 
-https://yourname.github.io/writing/rust-rewrite`,
-    link: 'https://yourname.github.io/writing/rust-rewrite',
+https://elenalippolis9.github.io/writing/rust-rewrite`,
+    link: 'https://elenalippolis9.github.io/writing/rust-rewrite',
   },
   '~/writing/2025-09-17_cli-design.md': {
     type: 'file',
@@ -135,8 +135,8 @@ Published: 2025-09-17
 Good CLIs feel like they were designed by someone who
 actually uses the terminal. Most aren't.
 
-https://yourname.github.io/writing/cli-design`,
-    link: 'https://yourname.github.io/writing/cli-design',
+https://elenalippolis9.github.io/writing/cli-design`,
+    link: 'https://elenalippolis9.github.io/writing/cli-design',
   },
   '~/writing/2025-07-02_boring-tech.md': {
     type: 'file',
@@ -170,8 +170,7 @@ and what I've learned about thinking in sets and constraints.`,
   '~/contact/links.txt': {
     type: 'file',
     content:
-`github    https://github.com/yourname
-linkedin  https://linkedin.com/in/yourname
-twitter   https://twitter.com/yourname`,
+`github    https://github.com/elenalippolis9
+linkedin  https://www.linkedin.com/in/elena-lippolis/
   },
 };

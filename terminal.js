@@ -57,7 +57,7 @@ function addEcho(cmdText) {
   const ps = document.createElement('span');
   ps.className = 'ps1-echo ps1';
   ps.innerHTML =
-    `<span class="host">yourname</span>` +
+    `<span class="host">elenalippolis</span>` +
     `<span class="sep">:</span>` +
     `<span class="path">${esc(cwd)}</span>` +
     `<span class="sigil"> $</span>`;
@@ -185,7 +185,7 @@ const CMDS = {
 
   whoami() {
     addBlank();
-    addLine('yourname — software engineer & open-source tinkerer', 'green');
+    addLine('elenalippolis — computer scientist and bioinformatician', 'green');
     addBlank();
     addLine('this is an interactive terminal. navigate like a filesystem:');
     addBlank();
