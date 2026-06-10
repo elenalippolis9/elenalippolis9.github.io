@@ -171,6 +171,6 @@ and what I've learned about thinking in sets and constraints.`,
     type: 'file',
     content:
 `github    https://github.com/elenalippolis9
-linkedin  https://www.linkedin.com/in/elena-lippolis/
+linkedin  https://www.linkedin.com/in/elena-lippolis/`,
   },
 };
