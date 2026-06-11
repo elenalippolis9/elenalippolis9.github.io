@@ -50,6 +50,31 @@ function addLine(text, cls) {
 
 function addBlank() { addLine(''); }
 
+function runClickSequence(commands) {
+  for (let i = 0; i < commands.length; i++) {
+    const ok = run(commands[i]);
+    if (ok === false) break;
+  }
+}
+
+function addEntryLine(name, targetPath, kind) {
+  const row = document.createElement('div');
+  row.className = 'line' + (kind === 'dir' ? ' dir' : ' file');
+
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = kind === 'dir' ? 'dir-link' : 'file-link';
+  button.textContent = kind === 'dir' ? name + '/' : name;
+  button.setAttribute('aria-label', kind === 'dir' ? `cd ${targetPath}` : `cat ${targetPath}`);
+  button.addEventListener('click', () => {
+    if (kind === 'dir') runClickSequence([`cd ${targetPath}`, 'ls']);
+    else run(`cat ${targetPath}`);
+  });
+
+  row.appendChild(button);
+  outputEl.appendChild(row);
+}
+
 function addEcho(cmdText) {
   const row = document.createElement('div');
   row.className = 'echo-row';
@@ -111,7 +136,7 @@ const CMDS = {
       return;
     }
     if (node.type === 'file') {
-      addLine(path.split('/').pop());
+      addEntryLine(path.split('/').pop(), path, 'file');
       return;
     }
 
@@ -120,7 +145,7 @@ const CMDS = {
       const childPath = (path === '~') ? '~/' + name : path + '/' + name;
       const child = FS[childPath];
       const isDir = child && child.type === 'dir';
-      addLine(isDir ? name + '/' : name, isDir ? 'dir' : '');
+      addEntryLine(name, childPath, isDir ? 'dir' : 'file');
     });
     addBlank();
   },
@@ -130,20 +155,21 @@ const CMDS = {
     if (!target || target === '~') {
       cwd = '~';
       ps1PathEl.textContent = '~';
-      return;
+      return true;
     }
     const path = resolve(target);
     const node = FS[path];
     if (!node) {
       addLine(`cd: ${target}: no such file or directory`, 'err');
-      return;
+      return false;
     }
     if (node.type === 'file') {
       addLine(`cd: ${target}: not a directory`, 'err');
-      return;
+      return false;
     }
     cwd = path;
     ps1PathEl.textContent = cwd;
+    return true;
   },
 
   cat(args) {
@@ -265,7 +291,7 @@ function run(line) {
   const trimmed = line.trim();
   addEcho(trimmed);
 
-  if (!trimmed) { scrollToBottom(); return; }
+  if (!trimmed) { scrollToBottom(); return true; }
 
   history.unshift(trimmed);
   histIdx = -1;
@@ -273,12 +299,14 @@ function run(line) {
   const [cmd, ...args] = trimmed.split(/\s+/);
 
   if (CMDS[cmd]) {
-    CMDS[cmd](args);
+    const result = CMDS[cmd](args);
+    scrollToBottom();
+    return result === undefined ? true : result;
   } else {
     addLine(`${cmd}: command not found  (type 'help' for commands)`, 'err');
+    scrollToBottom();
+    return false;
   }
-
-  scrollToBottom();
 }
 
 /* ── Input event listeners ────────────────────────────────── */

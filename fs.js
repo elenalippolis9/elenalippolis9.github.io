@@ -26,12 +26,18 @@ const FS = {
   /* ── Projects ── */
   '~/projects': {
     type: 'dir',
-    children: ['neutrophil-segmentation.md', 'cell-timelapse.md'],
+    children: [
+      'thesis-neutrophil-segmentation',
+      'wes-diagnosis-pipeline',
+      'single-cell-bulk-analysis',
+      'brain-tumor-survival',
+      'codon-usage-ml',
+      'cell-timelapse-segmentation',
+      'mystery-at-the-museum',
+    ],
   },
-  '~/projects/neutrophil-segmentation.md': {
-    type: 'file',
-    path: './content/projects/neutrophil-segmentation.md',
-    link: 'https://github.com/elenalippolis9' // Keep external links if needed
+  '~/projects/neutrophil-segmentation': {
+    type: 'dir', children: ['readme.md', 'link.txt']
   },
   '~/projects/cell-timelapse.md': {
     type: 'file',
@@ -42,9 +48,9 @@ const FS = {
   '~/writing': {
     type: 'dir',
     children: [
-      '2026-04-15_benchmarking-cell-segmentation.md',
-      '2025-09-05_unibo-motorsport-web.md',
-    ],
+    '2026-04-15_benchmarking-cell-segmentation.md',
+    '2025-09-05_unibo-motorsport-web.md',
+  ],
   },
   '~/writing/2026-04-15_benchmarking-cell-segmentation.md': {
     type: 'file',

@@ -1,0 +1,7 @@
+languages    Python, R, C++, C, Java, Javascript, SQL, Haskell, HTML, LaTeX
+ml / dl      PyTorch, TensorFlow, scikit-learn, OpenCV
+bioinf       Scanpy, Squidpy, CellTypist, StarDist, Cellpose
+skills       Deep Learning, Computer Vision, Single-cell & bulk analysis,
+             Spatial transcriptomics, Image segmentation
+currently    finishing MSc thesis at Human Technopole · learning more
+             about foundation models for pathology (DINOBloom, UNI)
